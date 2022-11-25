@@ -1,120 +1,149 @@
-
-alert("Bienvenido a ' By Daiana Mancuso' ! Deleitese con nuestros productos!")
-
-let nombre = prompt("ingrese su nombre")
-let apellido = prompt("ingrese su apellido")
-console.log("Bienvenido " + nombre + " " + apellido + " !") 
-
-// creacion de un objeto
-class Producto{
-    constructor (id,nombre,precio){
-        this.id=id;
-        this.nombre=nombre;
-        this.precio=precio;
-    }
-}
-
-const producto1 = new Producto (1,"Lemon Pie",2500);
-
-
-//Definicion de array de objetos con los productos del emprendimiento
 const productos = [
-    producto1,
-    {id:2, nombre: "Torta Brownie", precio:3000}, 
-    {id:3, nombre: "Crumble de manzana", precio:2900}, 
-    {id:4, nombre: "Parfait de Cafe", precio:3100}, 
-    {id:5, nombre: "Torta Brownie", precio:3000}, 
-    {id:6, nombre: "Pasta Frola", precio:2500}
+    { //tortas
+        id:"torta-1",
+        nombre:"Lemon Pie",
+        imagen:"./img/lemon-pie.jpg",
+        categoria:{nombre:"tortas", id:"torta-1"},
+        precio:2500
+    },
+    {
+        id:"torta-2",
+        nombre:"Torta Brownie",
+        imagen:"./img/torta-brownie.jpg",
+        categoria:{nombre:"tortas", id:"torta-2"},
+        precio:2800
+    },
+    {
+        id:"torta-3",
+        nombre:"Crumble",
+        imagen:"./img/crumble.png",
+        categoria:{nombre:"tortas", id:"torta-3"},
+        precio:2900
+    },
+    {
+        id:"torta-4",
+        nombre:"Pastafrola",
+        imagen:"./img/pastafrola.jpg",
+        categoria:{nombre:"tortas", id:"torta-4"},
+        precio:2300
+    },
+    //postres
+    {id:"postre-1",
+    nombre:"Parfait",
+    imagen:"./img/parfait-cafe.jpg",
+    categoria:{nombre:"postres", id:"postre-1"},
+    precio:3000
+    },
+    {
+        id:"postre-2",
+        nombre:"Tiramisu",
+        imagen:"./img/tiramisu.jpeg",
+        categoria:{nombre:"postres", id:"postre-2"},
+        precio:3200
+    },
+    { //alfajores
+        id:"alfajor-1",
+        nombre:"Alfajor Chocolate",
+        imagen:"./img/alfajor-mar.jpeg",
+        categoria:{nombre:"alfajores", id:"alfajor-1"},
+        precio:2500
+    },
+    {
+        id:"alfajor-2",
+        nombre:"Alfajor Fruta",
+        imagen:"./img/alfajor-fruta.jpg",
+        categoria:{nombre:"alfajores", id:"alfajor-2"},
+        precio:2500},
+    {
+        id:"alfajor-3",
+        nombre:"Alfajor Oreo",
+        imagen:"./img/alfajor-oreo.jpg",
+        categoria:{nombre:"alfajores", id:"alfajor-3"},
+        precio:2500
+    },
+
 ]
+
 console.log(productos)
 
-precio_acumulador= 0;
+const contenedorProductos = document.querySelector("#contenedor-productos");
+let botonesAgregar = document.querySelectorAll(".producto-agregar");
 
-// Funcion para que usando el id, el usuario pueda ir agregando los productos que quiera
-function cargar_productos (){
-    let cargar = "Vaya agregando de a uno los productos que desee comprar. Cuando finalice, escriba: '9' \n\n";
-    for (let producto of productos) { 
-        cargar += producto.id + " - " + producto.nombre + " => $" + producto.precio + "\n";
-    }
+// For Each para mostrar los productos en el carrito
+function cargarProductos(productosElegidos){
+
+    contenedorProductos.innerHTML = "";
+
+    productosElegidos.forEach(producto => {
+        const div = document.createElement("div");
+        div.classList.add("producto")
+        div.innerHTML = `
+        <img class="producto-imagen" src="${producto.imagen}" alt="${producto.nombre}">
+        <div class="producto-detalles">
+            <h3 class="producto-titulo">${producto.nombre}</h3>
+            <p class="producto-precio>${producto.precio}</p>
+            <button class="producto-agregar" id="${producto.id}"></button>
+            <button class="producto-agregar" id="${producto.id}">Agregar</button>
+        </div>
+        `;
+            // fijarme de mover el coso agregar para abajo para que se vea el precio de los productos
+        contenedorProductos.append(div)
+    })
+}
+
+cargarProductos(productos);
+
+
+
+// Que los botones agreguen los productos al array carrito:
+
+
+let comprar = document.querySelectorAll(".producto-agregar")
+//console.log(comprar)
+
+const numerito = document.querySelector("#numerito")
+
+
+comprar.forEach(boton =>{boton.addEventListener ("click", (e) =>{
     
-    let id_producto = 0;
+    const idBoton = e.currentTarget.id;
+    console.log(idBoton)
 
-    while (id_producto <= 6) { // bucle para ir agregando los distintos productos al carrito. Solo hay 6 productos, id >6 no se puede
-        let id_producto = parseInt(prompt(cargar));
+    const productoAgregado = productos.find(producto => producto.id == idBoton)
+    console.log(productoAgregado);
 
-        if (id_producto <= 6) {
-            id_producto = parseInt(id_producto);
-            console.log(id_producto); 
-            let producto = buscar_producto(id_producto); 
-            console.log(producto); 
-            agregar_producto(producto);
+    productosEnCarrito.push(productoAgregado)
+    console.log(productosEnCarrito);
+    actualizarNumerito()
 
-            precio_acumulador = precio_acumulador + producto.precio
-            console.log("subtotal: $" + precio_acumulador)
-        } else if (id_producto == 9){
-            alert("Ingresó '9', continúe para pagar.")
-            break;
-        }else if (id_producto >6){
-            alert("Numero de producto incorrecto. Verifique y vuelva a intentarlo")
-        }
-    }
+    localStorage.setItem("productos-en-carrito", JSON.stringify(productosEnCarrito))
+            })  
+        })
+
+function actualizarNumerito(){
+    let nuevoNumerito = productosEnCarrito.length
+    console.log(nuevoNumerito)
+    numerito.innerText = nuevoNumerito
 }
 
-// cuando elija el producto que quiere, que el sistema lo busque con funcion de orden superior find
-function buscar_producto (id){ 
-    return productos.find((elemento) => elemento.id == id); 
-}
+    // numero de carrito con LS
+    let productosEnCarrito;
 
-// cuando eligio y se busco el producto en el array con find, que lo agregue y te muestre el nuevo carrito
-const carrito = [];
-
-function agregar_producto (producto){ 
-    carrito.push(producto); 
-    console.log("Producto agregado");
-    console.log(carrito);
-    console.log(carrito.length)
-
-
-}
-
-// Que muestre el total de productos:
-function mostrar_carrito (){
-    console.log("Usted comprará: " + carrito.length + "  productos.")
-    console.log("total a abonar: $" + precio_acumulador)
-}
-
-
-cargar_productos();
-mostrar_carrito();
-
-
-// Descuentos (por efectivo y cantidad de productos comprados)
-    function descuento_cantidad (cantidad){
-        if (carrito.length > 3){
-            descuento_porcentaje = (precio_acumulador*10)/100;
-            descuento = precio_acumulador - descuento_porcentaje
-
-            console.log("Total a abonar con descuento por cantidad: $" + descuento);
-        } else if (cantidad <3){
-            console.log("Total a abonar: $" + precio_acumulador)
-        }
+    let productosEnCarritoLS = localStorage.getItem("productos-en-carrito");
+    
+    if (productosEnCarritoLS) {
+        productosEnCarrito = JSON.parse(productosEnCarritoLS);
+        actualizarNumerito();
+    } else {
+        productosEnCarrito = [];
     }
 
-    descuento_cantidad()
 
-    function descuento_forma_pago (){
-        let forma_pago_cliente = parseFloat(prompt(" Cómo abonará? (1) efectivo (2) tarjeta?"));
 
-    switch(forma_pago_cliente){
-        case 1:
-            let descuento2_porcentaje = (precio_acumulador*10)/100;
-            let descuento2 = precio_acumulador - descuento2_porcentaje;
-            console.log("Usted abonará $" + descuento2 + "  con descuento por pago en efectivo")
-            break;
-        case 2:
-            console.log("Usted debe abonar $" + precio_acumulador)
-    }
-    }
 
-    descuento_forma_pago();
+
+
+
+
+
 
