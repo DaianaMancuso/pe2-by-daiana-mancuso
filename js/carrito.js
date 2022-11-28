@@ -77,17 +77,36 @@ function eliminarDelCarrito(e) {
 
     function actualizarProductosEliminados() {
         
-        productosEnCarrito.innerHTML = "";
+        
+        productosEnCarrito.innerHTML = " ";
+        productosEnCarrito.forEach(producto => {
+
+
+            const div = document.createElement("div")
+            div.classList.add("carrito-producto")
+            div.innerHTML = `
+                            <img class="carrito-producto-imagen" src="${producto.imagen}" alt="${producto.titulo}">
+                            <div class="carrito-producto-titulo">
+                                <small>Título</small>
+                                <h3>${producto.nombre}</h3>
+                            </div>
+                            <div class="carrito-producto-precio">
+                                <small>Precio</small>
+                                <p>$${producto.precio}</p>
+                            </div>
+                            <div class="carrito-producto-subtotal">
+                                <small>Subtotal</small>
+                                <p>$${producto.precio}</p>
+                            </div>
+                            <button class="carrito-producto-eliminar" id="${producto.id}"><i class="bi bi-trash-fill"></i></button>
+        `;
+    
+        contenedorCarritoProductos.append(div);
+        })
         
 
-        //cargarProductosCarrito();
     }
 
     actualizarProductosEliminados();
 
 }
-
-
-
-
-
